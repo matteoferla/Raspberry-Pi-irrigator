@@ -23,5 +23,11 @@ I am reusing chunks of code from my previous projects:
 * [temp monitor site](https://github.com/matteoferla/Temperature-moniting-website-via-Rasberry-Pi)
 * [Spirometry via photoresistor](https://github.com/matteoferla/Spirometry_via_photoresistor)
 
+## Notes
+
+* I connected the two gnds. Not sure if it's a good idea or not.
+* DHT11 at 3.5V was iffy. Apparently the output is fine for the GPIO (3.29 V according to the MCP3008).
+* The ADC value of the photoresistor was non-zero when the wire was unplugged. so I put a 10kOhm pull-down resistor.
+
 
 
