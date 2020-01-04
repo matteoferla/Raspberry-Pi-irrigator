@@ -1,9 +1,12 @@
 # Raspberry-Pi-irrigator
-A Raspberry Pi controlled irrigation system to water plants based on soil moisture.
+A Raspberry Pi controlled irrigation system to water plants based on soil moisture
+—last year's attempt at gardening was an unmitigated disaster, so this year I am automating it.
 
 This project is ongoing and these are my notes...
 
 ## Components
+
+![irrigator.jpg](irrigator.jpg)
 
 * Pi 3B+. The website business to check the status is why I am not using an Arduino Uno —in my case, a fake Uno by Elegoo— despite having to deal with analog signals. I was going to use the Pi Zero but I want to use the camera (wich is for reg pi) and I don't have a spare USB hub to configure the wifi dongle (as I'd need either an ethernet dongle or keyboard to do so).
 * 2x Goso AB11 solenoid pumps (from eBay)[https://www.ebay.co.uk/itm/12V-Dosing-Pump-Peristaltic-Head-For-Aquarium-Lab-Analytical-Water-Arduino-DIY/202050095537] in green and blue. The pumps run at 12V 7.5W. SO 7.5W÷12V=0.625A.
