@@ -24,19 +24,31 @@ class Pins:
 
     @property
     def moisture(self):
-        return AnalogIn(self.mcp, MCP.P0).voltage
+        return round(100 - AnalogIn(self.mcp, MCP.P0).voltage/3.26*100)
 
     @property
     def brightness(self):
-        return AnalogIn(self.mcp, MCP.P1).voltage
+        """
+        Corrected to percent where 100% is as bright as it gets, while 30% is pitch darkness.
+        The 0.3V is the value when the gnd is pull out from the photoresistor
+        :return: brightness
+        """
+        return round(100 - AnalogIn(self.mcp, MCP.P1).voltage/0.30*100)
 
     @property
     def temperature(self):
-        return self.dht.temperature
+        while True:
+            try:
+                return self.dht.temperature
+            except:
+                pass
 
     @property
     def humidity(self):
-        return self.dht.humidity
+        try:
+            return self.dht.humidity
+        except:
+            pass
 
     def engage_pump(self, number=0, secs=1):
         self.pumps[number].value = True
