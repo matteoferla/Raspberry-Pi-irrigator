@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Plant growing</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+
+<body>
+  <a href="https://github.com/matteoferla/Raspberry-Pi-irrigator">Go to repo</a>
+  <p>For a specific range use <code>/?start=2019-11-23&stop=2019-11-25</code></p>
+  <a href="/?start={{threedaysago|safe}}&stop={{today}}">View the last 3 days</a> —
+  <a href="/?start={{yesterday|safe}}&stop={{today}}">View the last 24 hours</a> —
+  <a href="/?start={{aweekago|safe}}&stop={{today}}">View the last week</a>
+  <div id="graph" style="height:100vh;width:100vw;"></div>
+  <script type="text/javascript">
+  var trace1 = {
+  x: {{datetime|safe}},
+  y: {{temperature|safe}},
+  name: 'Temperature',
+  type: 'scatter',
+  line: {color: '#ff7f0e'},
+  mode: 'lines'
+};
+
+var trace2 = {
+  x: {{datetime|safe}},
+  y: {{humidity|safe}},
+  name: 'Humidity',
+  yaxis: 'y2',
+  type: 'scatter',
+  line: {color: '#1f77b4'},
+  mode: 'lines'
+};
+
+var trace3 = {
+  x: {{datetime|safe}},
+  y: {{moisture|safe}},
+  name: 'Moisture',
+  yaxis: 'y3',
+  type: 'scatter',
+  line: {color: '#8c564b'},
+  mode: 'lines'
+};
+
+var trace4 = {
+  x: {{datetime|safe}},
+  y: {{brightness|safe}},
+  name: 'Brightness',
+  yaxis: 'y3',
+  type: 'scatter',
+  line: {color: '#2ca02c'},
+  mode: 'lines'
+};
+
+var trace5 = {
+  x: {{datetime|safe}},
+  y: new Array({{len(datetime)|safe}}).fill(0),
+  name: 'Watering Time',
+  yaxis: 'y3',
+  type: 'scatter',
+  marker: {color: '#2ca02c', size: {{wateringtime|safe}}},
+  mode: 'markers',
+  hovertext: {{[str(x)+' sec.' for x in wateringtime]|safe}},
+  hoverinfo: 'text'
+};
+
+var data = [trace1, trace2, trace3, trace4, trace5];
+
+var layout = {
+  title: 'Irrigation stats',
+  xaxis: {domain: [0.15, 0.7]},
+  yaxis: {title: 'Temperature [°C]', range: [5,30], dtick: 1},
+  yaxis2: {
+    title: 'Humidity [%]',
+    overlaying: 'y',
+    side: 'right',
+    range: [0,100], dtick: 100/25
+  },
+  yaxis3: {
+    title: 'Sensor V',
+    overlaying: 'y',
+    side: 'right',
+    range: [0,5], dtick: 5/25,
+    anchor: "free",
+    overlaying: "y",
+    position: 0.85
+  }
+};
+
+Plotly.newPlot('graph', data, layout);
+  </script>
+</body>
+</html>
+<!doctype html>
