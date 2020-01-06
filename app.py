@@ -19,12 +19,10 @@ def sense():
                         humidity = pins.humidity,
                         moisture = pins.moisture,
                         brightness = pins.brightness)
-    while pins.moisture < 1:
-        pins.engage_pump(secs=5)
-        datum.wateringtime += 5
-        sleep(5)
+    while pins.moisture < 60:
+        pins.engage_pump(secs=10)
+        datum.wateringtime += 10
     db.session.add(datum)
-
 
 ############ View
 
