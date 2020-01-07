@@ -6,7 +6,7 @@ import busio
 import digitalio
 import board
 import time
-from datetime import datetime
+#from datetime import datetime
 
 class Pins:
     """

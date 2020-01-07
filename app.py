@@ -1,6 +1,9 @@
 from core import app # Flask app is initiated but without Models
 from models import db, engine, Measurement # Models initiated.
-from sensor import Pins #reads pins
+## PI
+#from sensor import Pins #reads pins
+## Not PI (Dev)
+from mock_sensor import MockPins as Pins
 
 from waitress import serve
 import os, json
@@ -60,7 +63,14 @@ def serve_data():
     else:
         start = datetime.combine((datetime.now() - timedelta(days=5)).date(), time.min)
     data = read_data(start, stop)
-    return render_template('moisture.html', **data)
+    return render_template('moisture.html',
+                           today=str(datetime.now().date()),
+                           yesterday=str((datetime.now() - timedelta(days=1)).date()),
+                           threedaysago=str((datetime.now() - timedelta(days=3)).date()),
+                           aweekago=str((datetime.now() - timedelta(days=7)).date()),
+                           watertimetext=[str(x)+' sec.' for x in data['wateringtime']],
+                           N_elements=len(data['datetime']),
+                           **data)
 
 ############# Main
 
@@ -68,6 +78,7 @@ if __name__ == '__main__':
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=sense, trigger="interval", hours=1)
+    #scheduler.add_job(func=sense, trigger="interval", hours=1)
+    scheduler.add_job(func=sense, trigger="interval", seconds=1)
     scheduler.start()
-    serve(app, host='0.0.0.0', port=8000)
+    serve(app, host='0.0.0.0', port=5000)

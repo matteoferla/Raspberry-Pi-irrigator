@@ -57,13 +57,13 @@ var trace4 = {
 
 var trace5 = {
   x: {{datetime|safe}},
-  y: new Array({{len(datetime)|safe}}).fill(0),
+  y: new Array({{N_elements|safe}}).fill(0),
   name: 'Watering Time',
   yaxis: 'y3',
   type: 'scatter',
   marker: {color: '#2ca02c', size: {{wateringtime|safe}}},
   mode: 'markers',
-  hovertext: {{[str(x)+' sec.' for x in wateringtime]|safe}},
+  hovertext: {{watertimetext|safe}},
   hoverinfo: 'text'
 };
 

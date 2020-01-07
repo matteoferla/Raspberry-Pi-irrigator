@@ -1,0 +1,7 @@
+waitress
+flask
+flask_sqlalchemy
+apscheduler
+adafruit-circuitpython-mcp3xxx
+adafruit-circuitpython-dht
+#sudo apt-get install libgpiod2
