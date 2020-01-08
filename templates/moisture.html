@@ -21,7 +21,7 @@
   y: {{temperature|safe}},
   name: 'Temperature',
   type: 'scatter',
-  line: {color: '#ff7f0e'},
+  line: {color: 'indianred'},
   mode: 'lines'
 };
 
@@ -31,7 +31,7 @@ var trace2 = {
   name: 'Humidity',
   yaxis: 'y2',
   type: 'scatter',
-  line: {color: '#1f77b4'},
+  line: {color: 'steelblue'},
   mode: 'lines'
 };
 
@@ -39,9 +39,9 @@ var trace3 = {
   x: {{datetime|safe}},
   y: {{moisture|safe}},
   name: 'Moisture',
-  yaxis: 'y3',
+  yaxis: 'y2',
   type: 'scatter',
-  line: {color: '#8c564b'},
+  line: {color: 'sienna'},
   mode: 'lines'
 };
 
@@ -49,9 +49,9 @@ var trace4 = {
   x: {{datetime|safe}},
   y: {{brightness|safe}},
   name: 'Brightness',
-  yaxis: 'y3',
+  yaxis: 'y2',
   type: 'scatter',
-  line: {color: '#2ca02c'},
+  line: {color: 'gold'},
   mode: 'lines'
 };
 
@@ -59,9 +59,10 @@ var trace5 = {
   x: {{datetime|safe}},
   y: new Array({{N_elements|safe}}).fill(0),
   name: 'Watering Time',
-  yaxis: 'y3',
+  yaxis: 'y2',
   type: 'scatter',
-  marker: {color: '#2ca02c', size: {{wateringtime|safe}}},
+  marker: {color: 'aqua',
+          size: {{wateringtime|safe}}},
   mode: 'markers',
   hovertext: {{watertimetext|safe}},
   hoverinfo: 'text'
@@ -71,22 +72,13 @@ var data = [trace1, trace2, trace3, trace4, trace5];
 
 var layout = {
   title: 'Irrigation stats',
-  xaxis: {domain: [0.15, 0.7]},
+  xaxis: {title: 'Date'},
   yaxis: {title: 'Temperature [°C]', range: [5,30], dtick: 1},
   yaxis2: {
     title: 'Humidity [%]',
     overlaying: 'y',
     side: 'right',
     range: [0,100], dtick: 100/25
-  },
-  yaxis3: {
-    title: 'Sensor V',
-    overlaying: 'y',
-    side: 'right',
-    range: [0,5], dtick: 5/25,
-    anchor: "free",
-    overlaying: "y",
-    position: 0.85
   }
 };
 
