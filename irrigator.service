@@ -1,9 +1,14 @@
 [Unit]
 Description=Irrigate
+After=network-online.target
+Requires=network-online.target
 
 [Service]
 Type=simple
+User=pi
+WorkingDirectory=/home/pi/
 ExecStart=/home/pi/berryconda3/bin/python3 /home/pi/irrigator/app.py
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
