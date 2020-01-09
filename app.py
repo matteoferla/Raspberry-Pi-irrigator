@@ -86,7 +86,7 @@ def serve_data():
                            aweekago=str((datetime.now() - timedelta(days=7)).date()),
                            watertimetext=[str(x)+' sec.' for x in data['wateringtime']],
                            N_elements=len(data['datetime']),
-                           album=list(sorted(os.listdir('static'), reverse=True))[:15:3],
+                           album=list(sorted(os.listdir('static/plat_photos'), reverse=True))[:15:3],
                            **data)
 
 ############# Main
