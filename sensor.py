@@ -14,6 +14,7 @@ import operator
 import functools
 from datetime import datetime
 import os
+import RPi.GPIO as GPIO
 
 class Cam:
     def __init__(self):
@@ -84,6 +85,9 @@ class Cam:
     def save(self, im):
         im.save('static/plant_photos/'+datetime.now().isoformat(timespec='seconds')+'.jpg')
 
+    def close(self):
+        self.camera.close()
+
 class Pins:
     """
    * DHT11 is connected to GPIO17 and powered by 3.3V without a pull resistor (DHT22 sensor not working)
@@ -131,3 +135,6 @@ class Pins:
         time.sleep(secs)
         self.pumps[number].value = False
         return self
+
+    def cleanup(self):
+        GPIO.cleanup()

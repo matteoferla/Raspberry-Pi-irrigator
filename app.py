@@ -12,12 +12,11 @@ import os, json
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template, request
 from datetime import datetime, timedelta, time
+from signal import signal, SIGINT
 
 # from scipy.signal import savgol_filter
 
 ###############  Scheduler
-pins = Pins()
-
 
 def sense():
     datum = Measurement(datetime=datetime.now(),
@@ -32,10 +31,6 @@ def sense():
     print(datum)
     db.session.add(datum)
     db.session.commit()
-
-
-camera = Cam()
-
 
 def photograph():
     im = camera.capture()
@@ -96,20 +91,20 @@ def serve_data():
 
 
 ############# Main
+def death_handler(signal_received, frame):
+    camera.close()
+    pins.cleanup()
+    print('SIGINT or CTRL-C detected. Exiting gracefully')
+    exit(0)
 
 if __name__ == '__main__':
+    pins = Pins()
+    camera = Cam()
+    signal(SIGINT, death_handler)
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=sense, trigger="interval", hours=1)
     scheduler.add_job(func=photograph, trigger="interval", hours=1)
     scheduler.start()
-    try:
-        serve(app, host='0.0.0.0', port=5000)
-    except KeyboardInterrupt:
-        camera.camera.close()
-        import RPi.GPIO as GPIO
-
-        GPIO.cleanup()
-        print('died gracefully.')
-        raise KeyboardInterrupt
+    serve(app, host='0.0.0.0', port=5000)
