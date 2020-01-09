@@ -34,7 +34,7 @@ def sense():
 
 def photograph():
     im = camera.capture()
-    im = camera.rotate(im)
+    #im = camera.rotate(im)
     im = camera.equalize(im)
     im = camera.whitebalance(im)
     camera.save(im)
