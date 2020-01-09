@@ -1,28 +1,30 @@
-from core import app # Flask app is initiated but without Models
-from models import db, engine, Measurement # Models initiated.
+from core import app  # Flask app is initiated but without Models
+from models import db, engine, Measurement  # Models initiated.
 ## PI
-from sensor import Pins, Cam #reads pins
+from sensor import Pins, Cam  # reads pins
 ## Not PI (Dev)
-#from mock_sensor import MockPins as Pins
-#from mock_sensor import MockCam as Cam
+# from mock_sensor import MockPins as Pins
+# from mock_sensor import MockCam as Cam
 
 from waitress import serve
 import os, json
-#from time import sleep #avoid clash with datetime.time
+# from time import sleep #avoid clash with datetime.time
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template, request
 from datetime import datetime, timedelta, time
-#from scipy.signal import savgol_filter
+
+# from scipy.signal import savgol_filter
 
 ###############  Scheduler
 pins = Pins()
 
+
 def sense():
     datum = Measurement(datetime=datetime.now(),
-                        temperature = pins.temperature,
-                        humidity = pins.humidity,
-                        moisture = pins.moisture,
-                        brightness = pins.brightness,
+                        temperature=pins.temperature,
+                        humidity=pins.humidity,
+                        moisture=pins.moisture,
+                        brightness=pins.brightness,
                         wateringtime=0)
     while pins.moisture < 50:
         pins.engage_pump(secs=10)
@@ -31,7 +33,9 @@ def sense():
     db.session.add(datum)
     db.session.commit()
 
+
 camera = Cam()
+
 
 def photograph():
     im = camera.capture()
@@ -39,6 +43,7 @@ def photograph():
     im = camera.equalize(im)
     im = camera.whitebalance(im)
     camera.save(im)
+
 
 ############ View
 
@@ -84,10 +89,11 @@ def serve_data():
                            yesterday=str((datetime.now() - timedelta(days=1)).date()),
                            threedaysago=str((datetime.now() - timedelta(days=3)).date()),
                            aweekago=str((datetime.now() - timedelta(days=7)).date()),
-                           watertimetext=[str(x)+' sec.' for x in data['wateringtime']],
+                           watertimetext=[str(x) + ' sec.' for x in data['wateringtime']],
                            N_elements=len(data['datetime']),
                            album=list(sorted(os.listdir('static/plant_photos'), reverse=True))[:15:3],
                            **data)
+
 
 ############# Main
 
@@ -103,6 +109,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         camera.camera.close()
         import RPi.GPIO as GPIO
+
         GPIO.cleanup()
         print('died gracefully.')
         raise KeyboardInterrupt
