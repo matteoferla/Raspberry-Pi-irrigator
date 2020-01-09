@@ -4,4 +4,6 @@ flask_sqlalchemy
 apscheduler
 adafruit-circuitpython-mcp3xxx
 adafruit-circuitpython-dht
+picamera
+Pillow
 #sudo apt-get install libgpiod2
