@@ -98,4 +98,11 @@ if __name__ == '__main__':
     scheduler.add_job(func=sense, trigger="interval", hours=1)
     scheduler.add_job(func=photograph, trigger="interval", hours=1)
     scheduler.start()
-    serve(app, host='0.0.0.0', port=5000)
+    try:
+        serve(app, host='0.0.0.0', port=5000)
+    except KeyboardInterrupt:
+        camera.camera.close()
+        import RPi.GPIO as GPIO
+        GPIO.cleanup()
+        print('died gracefully.')
+        raise KeyboardInterrupt
