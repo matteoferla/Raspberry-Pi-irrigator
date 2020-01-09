@@ -18,10 +18,10 @@ import os
 class Cam:
     def __init__(self):
         self.camera = PiCamera()
-        if not os.path.exists('album'):
-            os.mkdir('album')
-        if not os.path.exists('album/plant_photos'):
-            os.mkdir('album/plant_photos')
+        if not os.path.exists('static'):
+            os.mkdir('static')
+        if not os.path.exists('static/plant_photos'):
+            os.mkdir('static/plant_photos')
 
 
     def capture(self):
