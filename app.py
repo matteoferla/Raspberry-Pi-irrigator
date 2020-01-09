@@ -1,9 +1,10 @@
 from core import app # Flask app is initiated but without Models
 from models import db, engine, Measurement # Models initiated.
 ## PI
-from sensor import Pins #reads pins
+from sensor import Pins, Cam #reads pins
 ## Not PI (Dev)
 #from mock_sensor import MockPins as Pins
+#from mock_sensor import MockCam as Cam
 
 from waitress import serve
 import os, json
@@ -29,6 +30,15 @@ def sense():
     print(datum)
     db.session.add(datum)
     db.session.commit()
+
+camera = Cam()
+
+def photograph():
+    im = camera.capture()
+    im = camera.rotate(im)
+    im = camera.equalize(im)
+    im = camera.whitebalance(im)
+    camera.save(im)
 
 ############ View
 
@@ -76,6 +86,7 @@ def serve_data():
                            aweekago=str((datetime.now() - timedelta(days=7)).date()),
                            watertimetext=[str(x)+' sec.' for x in data['wateringtime']],
                            N_elements=len(data['datetime']),
+                           album=list(sorted(os.listdir('static'), reverse=True))[:15:3],
                            **data)
 
 ############# Main
@@ -85,5 +96,6 @@ if __name__ == '__main__':
         db.create_all()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=sense, trigger="interval", hours=1)
+    scheduler.add_job(func=photograph, trigger="interval", hours=1)
     scheduler.start()
     serve(app, host='0.0.0.0', port=5000)
