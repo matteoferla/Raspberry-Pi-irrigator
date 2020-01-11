@@ -1,7 +1,7 @@
 from core import app  # Flask app is initiated but without Models
 from models import db, engine, Measurement  # Models initiated.
 ## PI
-from sensor import Pins, Cam  # reads pins
+from sensor import Pins, Photo  # reads pins
 ## Not PI (Dev)
 # from mock_sensor import MockPins as Pins
 # from mock_sensor import MockCam as Cam
@@ -31,13 +31,6 @@ def sense():
     print(datum)
     db.session.add(datum)
     db.session.commit()
-
-def photograph():
-    im = camera.capture()
-    #im = camera.rotate(im)
-    im = camera.equalize(im)
-    im = camera.whitebalance(im)
-    camera.save(im)
 
 
 ############ View
@@ -92,19 +85,19 @@ def serve_data():
 
 ############# Main
 def death_handler(signal_received, frame):
-    camera.close()
+    if Photo._camera:
+        Photo._camera.close()
     pins.cleanup()
     print('SIGINT or CTRL-C detected. Exiting gracefully')
     exit(0)
 
 if __name__ == '__main__':
     pins = Pins()
-    camera = Cam()
     signal(SIGINT, death_handler)
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=sense, trigger="interval", hours=1)
-    scheduler.add_job(func=photograph, trigger="interval", hours=1)
+    scheduler.add_job(func=Photo, trigger="interval", hours=1)
     scheduler.start()
     serve(app, host='0.0.0.0', port=5000)

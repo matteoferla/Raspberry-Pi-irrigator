@@ -26,18 +26,5 @@ class MockPins:
     def engage_pump(self, number=0, secs=1):
         return self
 
-class MockCam:
-    def __init__(self):
-        self.camera = None
-
-    def capture(self):
-        return Image.open('irrigator.jpg')
-
-    def rotate(self, im):
-        return im
-
-    def equalize(self, im):
-        return im
-
-    def whitebalance(self, im):
-        return im
+class Photo:
+    pass
