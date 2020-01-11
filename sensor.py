@@ -10,14 +10,9 @@ from picamera import PiCamera
 from PIL import Image
 from io import BytesIO
 import numpy as np
-import operator
-import functools
 from datetime import datetime
 import os
 import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-## light
-GPIO.setup(21, GPIO.OUT)
 
 if not os.path.exists('static'):
     os.mkdir('static')
