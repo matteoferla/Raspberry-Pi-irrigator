@@ -125,10 +125,13 @@ class Pins:
 
     @property
     def humidity(self):
-        try:
-            return self.dht.humidity
-        except:
-            pass
+        while True:
+            try:
+                d = self.dht.humidity
+                assert d < 101
+                return self.dht.humidity
+            except:
+                pass
 
     def engage_pump(self, number=0, secs=1):
         self.pumps[number].value = True
