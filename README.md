@@ -31,10 +31,13 @@ I am reusing chunks of code from my previous projects:
 * DHT11 at 3.5V was iffy. Apparently the output is fine for the GPIO (3.29 V according to the MCP3008). I have a DHT22, but it seems faulty.
 * The ADC value of the photoresistor was non-zero when the wire was unplugged. so I put a 10kOhm pull-down resistor.
 * Bought 2mm graphite cores for mechanical pencils from [Amazon](https://www.amazon.co.uk/gp/product/B0051OCJZ4/)
+* Like always during construction I tested chunks of code on the Raspberry via a jupyter notebook it serves across the network (`jupyter notebook --ip="*"`). 
 
 ## pi Camera NoIR
 
-My camera is the infrared camera for night mode. So what about daytime?
+My camera is the infrared camera for night mode.
+So what about daytime? Maths to the rescue! (see [camera.md](camera.md))
+
 
 ![raw](images/raw.png)
 
