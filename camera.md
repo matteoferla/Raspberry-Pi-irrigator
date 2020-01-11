@@ -1,4 +1,4 @@
-This what the image looks like at 
+This what the image looks like in low halogen bulb light 
 ![raw](images/raw.png)
 
 When I run
@@ -107,7 +107,7 @@ So I tried histrogram stretching per channel
 
 The per channel stretching is actually really good.
 
-!(channel)[images/eq_c.png]
+![channel](images/eq_c.png)
 
 The whitebalancing in the YCbCr domain does little.
 
