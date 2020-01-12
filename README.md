@@ -6,6 +6,21 @@ A Raspberry Pi controlled irrigation system to water plants based on soil moistu
 
 This project is ongoing and these are my notes...
 
+## Features
+
+A pump waters the plant (a peter pepper chilli plant) based on its soil moisture, while the pi camera takes photos of it. 
+
+### Moisture
+A resistance sensor (YL69 moisture sensor) measures the soil humidity every hour and if the soil resistance goes too low the pump is activated.
+
+The arbitrary value of 50% threshold is based on plying with ramekins with soil. I baked some soil in the oven and then measured different levels of hydration.
+
+I got ages back the YL69 moisture sensor from Kuman kit from Amazon. The YL-69 consists of an electrode and an amplifier (LM393) module. The YL69 oxidises over time (a month apparently).
+So further down the line, I will need to switch the electrode to a pair of graphite leads or a capacitance sensor. LM393 is a comparator not a op-amp like a LM358. For project completion I would need multiple sensors.
+
+### Water level
+I 
+
 ## Components
 
 ![irrigator.jpg](irrigator.jpg)
@@ -14,7 +29,7 @@ This project is ongoing and these are my notes...
 * 2x Goso AB11 solenoid pumps [from eBay](https://www.ebay.co.uk/itm/12V-Dosing-Pump-Peristaltic-Head-For-Aquarium-Lab-Analytical-Water-Arduino-DIY/202050095537) in green and blue. The pumps run at 12V 7.5W. SO 7.5W÷12V=0.625A.
 * 2x STM ULN2803A Darlington Drivers [from eBay](https://www.ebay.co.uk/itm/ULN2803A-Darlington-Driver-TRANSISTOR-ARRAY-8-NPN-x-2-pcs/222622920820). The darlington driver has inbuilt rectifier diodes. 
 * MCP3008 ADC (previous)
-* YL69 moisture sensor (previous, from Kuman kit from Amazon). The YL-69 consists of an electrode and an amplifier (LM393) module. The YL69 oxidises over time, further down the line, I might need to switch the electrode to a pair of graphite cores of a pencil as suggested online —or 2mm mechanical pencil refills. LM393 is a comparator not a op-amp like a LM358. For project completion I would need multiple sensors. I'll decide once I try the YL-69.
+* 
 * GL5528 photoresistors (previous)
 * AC/DC adaptor 12V⎓3A with standard ⊖-C*-⊕ coaxial and screw jack-thinggy adaptor.
 * 2mm graphite cores for mechanical pencils from [Amazon](https://www.amazon.co.uk/gp/product/B0051OCJZ4/) 
