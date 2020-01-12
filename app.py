@@ -81,7 +81,6 @@ def read_data(start, stop):
 def check_spill():
     if pins.spilled:
         slack('There is a spill!')
-        raise Exception
 
 @app.route('/')
 def serve_data():
@@ -108,10 +107,14 @@ def serve_data():
 
 ############# Main
 def death_handler(signal_received, frame):
-    if Photo._camera:
-        Photo._camera.close()
+    try:
+        if Photo.camera:
+            Photo.camera.close()
+    except:
+        pass
     pins.cleanup()
     print('SIGINT or CTRL-C detected. Exiting gracefully')
+    slack('Shutting down gracefully')
     exit(0)
 
 if __name__ == '__main__':

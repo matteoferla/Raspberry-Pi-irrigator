@@ -86,7 +86,7 @@ class Pins:
         # Three pronged: error, D0 and A0
         # just in case.
         try:
-            if self.rain.value:
+            if not self.rain.value:
                 return True
             elif AnalogIn(self.mcp, MCP.P3).voltage < 3:
                 return True
@@ -124,15 +124,18 @@ class Flash:
         for i in range(3): self.strip[i].value = False
 
 class Photo:
-    _camera = None
-    # _camera  is a SIGINT death safeguard.
+    camera = PiCamera()
+    # see also a SIGINT death safeguard.
     # it is this or the gc ...
 
-    def __init__(self):
+    def __init__(self, warmup=5):
         self.data = np.zeros((480, 720, 3))
+        self.camera.start_preview()
+        time.sleep(warmup)
         with Flash(mode='led'):
             while np.max(self.data) < 255:
-                np.add(self.data, np.asarray(self.capture()))
+                self.data = np.add(self.data, np.asarray(self.capture()))
+        self.camera.close()
         self.data = self.per_channel(self.scale, self.data)
         self.data = self.per_channel(self.histogram_stretch, self.data)
         self.image = Image.fromarray(self.data)
@@ -159,16 +162,11 @@ class Photo:
         cdf = np.ma.filled(cdf_m, 0)
         return cdf[t.astype('uint8')].astype('uint8')
 
-    def capture(self, warmup=2) -> Image:
-        with PiCamera() as camera:
-            self.__class__._camera = camera
-            stream = BytesIO()
-            camera.start_preview()
-            time.sleep(warmup)
-            camera.capture(stream, format='jpeg')
-            self.__class__._camera = None
-            stream.seek(0)
-            im = Image.open(stream)
+    def capture(self) -> Image:
+        stream = BytesIO()
+        self.camera.capture(stream, format='jpeg')
+        stream.seek(0)
+        im = Image.open(stream)
         return im
 
     def rotate(self) -> Image:

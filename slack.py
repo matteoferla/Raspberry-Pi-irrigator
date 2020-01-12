@@ -15,7 +15,7 @@ def slack(msg):
     msg = re.sub('[^\w\s\-.,;?!@#()\[\]]','', msg)
     r = requests.post(url=os.environ['SLACK_WEBHOOK'],
                       headers={'Content-type': 'application/json'},
-                      data=f"{{'text': '{msg}'}}")
+                      data=f"{{'text': 'Irrigator: {msg}'}}")
     if r.status_code == 200 and r.content == b'ok':
         return True
     else:
