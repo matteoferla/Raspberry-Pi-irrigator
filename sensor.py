@@ -35,6 +35,7 @@ class Pins:
     pumps = (digitalio.DigitalInOut(board.D23), digitalio.DigitalInOut(board.D24))
     pumps[0].direction = digitalio.Direction.OUTPUT
     pumps[1].direction = digitalio.Direction.OUTPUT
+    rain = digitalio.DigitalInOut(board.D20)
 
     @property
     def moisture(self):
@@ -74,8 +75,26 @@ class Pins:
         return self
 
     @property
-    def is_tank_filled(self):
-        return True
+    def tank_filled(self):
+        if AnalogIn(self.mcp, MCP.P2).voltage > 1.5:
+            return True
+        else:
+            return False
+
+    @property
+    def spilled(self):
+        # Three pronged: error, D0 and A0
+        # just in case.
+        try:
+            if self.rain.value:
+                return True
+            elif AnalogIn(self.mcp, MCP.P3).voltage < 3:
+                return True
+            else:
+                return False
+        except:
+            return True
+
 
     def cleanup(self):
         GPIO.cleanup()

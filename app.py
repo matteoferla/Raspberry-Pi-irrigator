@@ -30,16 +30,26 @@ def sense():
                         moisture=pins.moisture,
                         brightness=pins.brightness,
                         wateringtime=0)
+    #tasks
+    water(datum)
+    check_tank()
+    db.session.add(datum)
+    db.session.commit()
+
+def water(datum):
     while pins.moisture < 50:
         if datum.wateringtime >= 60:
-            slack('Soil moisture {m}% but has water for {t} already'\
-                    .format(m=pins.moisture, t=datum.wateringtime))
+            slack('Soil moisture {m}% but has water for {t} already' \
+                  .format(m=pins.moisture, t=datum.wateringtime))
             break
         pins.engage_pump(secs=10)
         datum.wateringtime += 10
-    print(datum)
-    db.session.add(datum)
-    db.session.commit()
+
+def check_tank():
+    if not pins.tank_filled:
+        slack('Water is getting low')
+    else:
+        pass
 
 
 ############ View
@@ -68,6 +78,10 @@ def read_data(start, stop):
                 brightness=smooth(b),
                 wateringtime=smooth(wt))
 
+def check_spill():
+    if pins.spilled:
+        slack('There is a spill!')
+        raise Exception
 
 @app.route('/')
 def serve_data():
@@ -108,5 +122,6 @@ if __name__ == '__main__':
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=sense, trigger="interval", hours=1)
     scheduler.add_job(func=Photo, trigger="interval", hours=1)
+    scheduler.add_job(func=check_spill, trigger="interval", minutes=1)
     scheduler.start()
     serve(app, host='0.0.0.0', port=5000)
