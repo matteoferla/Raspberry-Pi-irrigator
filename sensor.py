@@ -128,11 +128,11 @@ class Photo:
     # see also a SIGINT death safeguard.
     # it is this or the gc ...
 
-    def __init__(self, warmup=5):
+    def __init__(self, warmup=5, mode='strip'):
         self.data = np.zeros((480, 720, 3))
         self.camera.start_preview()
         time.sleep(warmup)
-        with Flash(mode='led'):
+        with Flash(mode=mode):
             while np.max(self.data) < 255:
                 self.data = np.add(self.data, np.asarray(self.capture()))
         self.camera.close()
