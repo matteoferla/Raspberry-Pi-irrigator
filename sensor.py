@@ -143,7 +143,7 @@ class Photo:
 
     @staticmethod
     def per_channel(fx, t):
-        a = [fx(t[:, :, c]) for c in range(3)]
+        a = [fx(t[:, :]) for c in range(3)]
         return np.stack(a, axis=-1)
 
     @staticmethod
