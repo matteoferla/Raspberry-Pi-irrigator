@@ -19,70 +19,9 @@ if not os.path.exists('static'):
 if not os.path.exists('static/plant_photos'):
     os.mkdir('static/plant_photos')
 
-class Flash:
-    light = digitalio.DigitalInOut(board.D21)
-    light.direction = digitalio.Direction.OUTPUT
-    def __enter__(self):
-        self.light = True
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.light = False
-
-class Photo:
-    _camera = None
-    # _camera  is a SIGINT death safeguard.
-    # it is this or the gc ...
-
-    def __init__(self):
-        self.data = np.zeros((480, 720, 3))
-        with Flash:
-            while np.max(self.data) < 255:
-                np.add(self.data, np.asarray(self.capture()))
-        self.data = self.per_channel(self.scale, self.data)
-        self.data = self.per_channel(self.histogram_stretch, self.data)
-        self.image = Image.fromarray(self.data)
-        self.save()
-
-    @staticmethod
-    def per_channel(fx, t):
-        a = [fx(t[:, :, c]) for c in range(3)]
-        return np.stack(a, axis=-1)
-
-    @staticmethod
-    def scale(matrix: np.ndarray, interval=(0, 255)) -> np.ndarray:
-        minima = np.min(matrix)
-        maxima = np.max(matrix)
-        scaled = (matrix - minima) / (maxima - minima) * interval[1] + interval[0]
-        return scaled
-
-    def histogram_stretch(t: np.ndarray) -> np.ndarray:
-        hist, bins = np.histogram(t.flatten(), 256, [0, 256])
-        cdf = hist.cumsum()
-        cdf_normalized = cdf * hist.max() / cdf.max()
-        cdf_m = np.ma.masked_equal(cdf, 0)
-        cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min())
-        cdf = np.ma.filled(cdf_m, 0)
-        return cdf[t.astype('uint8')].astype('uint8')
-
-    def capture(self) -> Image:
-        with PiCamera() as camera:
-            self.__class__._camera = camera
-            stream = BytesIO()
-            camera.start_preview()
-            time.sleep(5)
-            camera.capture(stream, format='jpeg')
-            self.__class__._camera = None
-            stream.seek(0)
-            im = Image.open(stream)
-        return im
-
-    def rotate(self) -> Image:
-        # Image
-        return self.image.transpose(Image.ROTATE_180)
-
-    def save(self):
-        self.image.save('static/plant_photos/'+datetime.now().isoformat(timespec='seconds')+'.jpg')
-
+spi = busio.SPI(clock=11, MISO=9, MOSI=10)
+cs = digitalio.DigitalInOut(board.D5)
+mcp = MCP.MCP3008(spi, cs)
 
 class Pins:
     """
@@ -90,9 +29,8 @@ class Pins:
     * MCP3008 is MISO: GPIO9, MOSI:GPIO10, Clock: GPIO11 and CS GPIO05
     * Pumps are connected to GPIO23 and GPIO24 (the two pins between two GND)
     """
-    spi = busio.SPI(clock=11, MISO=9, MOSI=10)
-    cs = digitalio.DigitalInOut(board.D5)
-    mcp = MCP.MCP3008(spi, cs)
+
+    mcp = mcp
     dht = adafruit_dht.DHT11(board.D17)
     pumps = (digitalio.DigitalInOut(board.D23), digitalio.DigitalInOut(board.D24))
     pumps[0].direction = digitalio.Direction.OUTPUT
@@ -135,5 +73,88 @@ class Pins:
         self.pumps[number].value = False
         return self
 
+    @property
+    def is_tank_filled(self):
+        return True
+
     def cleanup(self):
         GPIO.cleanup()
+
+class Flash:
+    light = digitalio.DigitalInOut(board.D21)
+    light.direction = digitalio.Direction.OUTPUT
+    strip = (digitalio.DigitalInOut(board.D13), #R
+             digitalio.DigitalInOut(board.D19), #G
+             digitalio.DigitalInOut(board.D26)) #B
+    for i in range(3):
+        strip[i].direction = digitalio.Direction.OUTPUT
+
+    def __init__(self, mode='strip'):
+        self.mode = mode
+        assert mode in ('led', 'strip')
+
+    def __enter__(self):
+        if self.mode == 'strip':
+            for i in range(3): self.strip[i].value = True
+        else:
+            self.light = True
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.light = False
+        for i in range(3): self.strip[i].value = False
+
+class Photo:
+    _camera = None
+    # _camera  is a SIGINT death safeguard.
+    # it is this or the gc ...
+
+    def __init__(self):
+        self.data = np.zeros((480, 720, 3))
+        with Flash(mode='led'):
+            while np.max(self.data) < 255:
+                np.add(self.data, np.asarray(self.capture()))
+        self.data = self.per_channel(self.scale, self.data)
+        self.data = self.per_channel(self.histogram_stretch, self.data)
+        self.image = Image.fromarray(self.data)
+        self.save()
+
+    @staticmethod
+    def per_channel(fx, t):
+        a = [fx(t[:, :, c]) for c in range(3)]
+        return np.stack(a, axis=-1)
+
+    @staticmethod
+    def scale(matrix: np.ndarray, interval=(0, 255)) -> np.ndarray:
+        minima = np.min(matrix)
+        maxima = np.max(matrix)
+        scaled = (matrix - minima) / (maxima - minima) * interval[1] + interval[0]
+        return scaled
+
+    def histogram_stretch(t: np.ndarray) -> np.ndarray:
+        hist, bins = np.histogram(t.flatten(), 256, [0, 256])
+        cdf = hist.cumsum()
+        cdf_normalized = cdf * hist.max() / cdf.max()
+        cdf_m = np.ma.masked_equal(cdf, 0)
+        cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min())
+        cdf = np.ma.filled(cdf_m, 0)
+        return cdf[t.astype('uint8')].astype('uint8')
+
+    def capture(self, warmup=2) -> Image:
+        with PiCamera() as camera:
+            self.__class__._camera = camera
+            stream = BytesIO()
+            camera.start_preview()
+            time.sleep(warmup)
+            camera.capture(stream, format='jpeg')
+            self.__class__._camera = None
+            stream.seek(0)
+            im = Image.open(stream)
+        return im
+
+    def rotate(self) -> Image:
+        # Image
+        return self.image.transpose(Image.ROTATE_180)
+
+    def save(self):
+        self.image.save('static/plant_photos/'+datetime.now().isoformat(timespec='seconds')+'.jpg')

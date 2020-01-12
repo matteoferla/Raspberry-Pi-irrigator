@@ -7,3 +7,5 @@ adafruit-circuitpython-dht
 picamera
 Pillow
 #sudo apt-get install libgpiod2
+requests
+unicodedata

@@ -13,12 +13,17 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import render_template, request
 from datetime import datetime, timedelta, time
 from signal import signal, SIGINT
+from slack import slack
 
 # from scipy.signal import savgol_filter
 
 ###############  Scheduler
 
 def sense():
+    """
+    Logs data and waters if needed for a max of 60 secs.
+    :return:
+    """
     datum = Measurement(datetime=datetime.now(),
                         temperature=pins.temperature,
                         humidity=pins.humidity,
@@ -26,6 +31,10 @@ def sense():
                         brightness=pins.brightness,
                         wateringtime=0)
     while pins.moisture < 50:
+        if datum.wateringtime >= 60:
+            slack('Soil moisture {m}% but has water for {t} already'\
+                    .format(m=pins.moisture, t=datum.wateringtime))
+            break
         pins.engage_pump(secs=10)
         datum.wateringtime += 10
     print(datum)

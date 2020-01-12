@@ -16,7 +16,8 @@ This project is ongoing and these are my notes...
 * MCP3008 ADC (previous)
 * YL69 moisture sensor (previous, from Kuman kit from Amazon). The YL-69 consists of an electrode and an amplifier (LM393) module. The YL69 oxidises over time, further down the line, I might need to switch the electrode to a pair of graphite cores of a pencil as suggested online —or 2mm mechanical pencil refills. LM393 is a comparator not a op-amp like a LM358. For project completion I would need multiple sensors. I'll decide once I try the YL-69.
 * GL5528 photoresistors (previous)
-* AC/DC adaptor 12V⎓3A with standard ⊖-C*-⊕ coaxial and screw jack-thinggy adaptor. 
+* AC/DC adaptor 12V⎓3A with standard ⊖-C*-⊕ coaxial and screw jack-thinggy adaptor.
+* 2mm graphite cores for mechanical pencils from [Amazon](https://www.amazon.co.uk/gp/product/B0051OCJZ4/) 
 
 ## Code
 
@@ -30,8 +31,11 @@ I am reusing chunks of code from my previous projects:
 * I connected the two gnds. Not sure if it's a good idea or not.
 * DHT11 at 3.5V was iffy. Apparently the output is fine for the GPIO (3.29 V according to the MCP3008). I have a DHT22, but it seems faulty.
 * The ADC value of the photoresistor was non-zero when the wire was unplugged. so I put a 10kOhm pull-down resistor.
-* Bought 2mm graphite cores for mechanical pencils from [Amazon](https://www.amazon.co.uk/gp/product/B0051OCJZ4/)
 * Like always during construction I tested chunks of code on the Raspberry via a jupyter notebook it serves across the network (`jupyter notebook --ip="*"`). 
+
+## Water jug sensor
+
+Two leads on opposite sides of jug (7ish cm) to measure resistance of water (1k&Omega;/cm). Used _100_ k&Omega; pulldown.
 
 ## pi Camera NoIR
 
