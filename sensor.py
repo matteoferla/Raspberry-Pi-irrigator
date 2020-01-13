@@ -14,9 +14,7 @@ from datetime import datetime
 import os
 import RPi.GPIO as GPIO
 
-### startup
-GPIO.cleanup()
-
+### startup ###############################################################
 if not os.path.exists('static'):
     os.mkdir('static')
 if not os.path.exists('static/plant_photos'):
@@ -25,7 +23,8 @@ if not os.path.exists('static/plant_photos'):
 spi = busio.SPI(clock=11, MISO=9, MOSI=10)
 cs = digitalio.DigitalInOut(board.D5)
 mcp = MCP.MCP3008(spi, cs)
-## classes
+
+## classes  ###############################################################
 
 class Pins:
     """
@@ -103,6 +102,8 @@ class Pins:
     def cleanup(self):
         GPIO.cleanup()
 
+###################################################
+
 class Flash:
     light = digitalio.DigitalInOut(board.D21)
     light.direction = digitalio.Direction.OUTPUT
@@ -126,6 +127,8 @@ class Flash:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.light = False
         for i in range(3): self.strip[i].value = False
+
+###################################################
 
 class Photo:
     _camera = None
