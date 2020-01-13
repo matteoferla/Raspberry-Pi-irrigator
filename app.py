@@ -17,6 +17,9 @@ from slack import slack
 
 # from scipy.signal import savgol_filter
 
+dprint = lambda *args: None
+#dprint = print
+
 ###############  Scheduler
 
 def sense():
@@ -25,14 +28,18 @@ def sense():
     :return:
     """
     datum = Measurement(datetime=datetime.now(),
-                        temperature=pins.temperature,
-                        humidity=pins.humidity,
+                        temperature=20, #pins.temperature,
+                        humidity=60,#pins.humidity,
                         moisture=pins.moisture,
                         brightness=pins.brightness,
                         wateringtime=0)
+    dprint(datum)
     #tasks
+    dprint('measured')
     water(datum)
+    dprint('watered')
     check_tank()
+    dprint('tank checked')
     db.session.add(datum)
     db.session.commit()
 
