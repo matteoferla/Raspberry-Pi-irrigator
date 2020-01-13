@@ -108,7 +108,7 @@ def serve_data():
 ############# Main
 def death_handler(signal_received, frame):
     try:
-        if Photo.camera:
+        if Photo._camera and not Photo._camera.closed:
             Photo.camera.close()
     except:
         pass

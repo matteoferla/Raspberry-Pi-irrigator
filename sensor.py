@@ -124,18 +124,20 @@ class Flash:
         for i in range(3): self.strip[i].value = False
 
 class Photo:
-    camera = PiCamera()
+    _camera = None
     # see also a SIGINT death safeguard.
     # it is this or the gc ...
 
     def __init__(self, warmup=5, mode='strip'):
         self.data = np.zeros((480, 720, 3))
-        self.camera.start_preview()
-        time.sleep(warmup)
-        with Flash(mode=mode):
-            while np.max(self.data) < 255:
-                self.data = np.add(self.data, np.asarray(self.capture()))
-        self.camera.close()
+        with PiCamera() as self.camera:
+            self.__class__._camera = self.camera # death prevention..
+            self.camera.start_preview()
+            time.sleep(warmup)
+            with Flash(mode=mode):
+                while np.max(self.data) < 255:
+                    self.data = np.add(self.data, np.asarray(self.capture()))
+        self.__class__._camera = None
         self.data = self.per_channel(self.scale, self.data)
         self.data = self.per_channel(self.histogram_stretch, self.data)
         self.image = Image.fromarray(self.data)
