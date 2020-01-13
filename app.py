@@ -122,6 +122,9 @@ if __name__ == '__main__':
     signal(SIGINT, death_handler)
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
+    sense()
+    Photo()
+    check_spill()
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=sense, trigger="interval", hours=1)
     scheduler.add_job(func=Photo, trigger="interval", hours=1)

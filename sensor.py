@@ -14,6 +14,9 @@ from datetime import datetime
 import os
 import RPi.GPIO as GPIO
 
+### startup
+GPIO.cleanup()
+
 if not os.path.exists('static'):
     os.mkdir('static')
 if not os.path.exists('static/plant_photos'):
@@ -22,6 +25,7 @@ if not os.path.exists('static/plant_photos'):
 spi = busio.SPI(clock=11, MISO=9, MOSI=10)
 cs = digitalio.DigitalInOut(board.D5)
 mcp = MCP.MCP3008(spi, cs)
+## classes
 
 class Pins:
     """
