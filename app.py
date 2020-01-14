@@ -134,6 +134,7 @@ if __name__ == '__main__':
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
     ## test
+    slack('Irrigator restarted')
     sense()
     print('Sensing check fine.')
     Photo()
