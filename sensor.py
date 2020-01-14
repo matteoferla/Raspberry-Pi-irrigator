@@ -53,6 +53,7 @@ class Pins:
         """
         return round(100 - AnalogIn(self.mcp, MCP.P1).voltage/0.30*100)
 
+
     @property
     def temperature(self):
         while True:
@@ -79,10 +80,18 @@ class Pins:
 
     @property
     def tank_filled(self):
-        if AnalogIn(self.mcp, MCP.P2).voltage > 1.5:
+        if self.tank_level > 1.5:
             return True
         else:
             return False
+
+    @property
+    def tank_level(self):
+        return AnalogIn(self.mcp, MCP.P2).voltage
+
+    @property
+    def rain_analog(self):
+        return AnalogIn(self.mcp, MCP.P3).voltage
 
     @property
     def spilled(self):
@@ -92,8 +101,8 @@ class Pins:
             if not self.rain.value:
                 print('Spill detected by the digital pin')
                 return True
-            elif AnalogIn(self.mcp, MCP.P3).voltage < 3:
-                print('Spill detected by the analogue pin '+AnalogIn(self.mcp, MCP.P3).voltage)
+            elif self.rain_analog < 3:
+                print('Spill detected by the analogue pin '+self.rain_analog)
                 return True
             else:
                 return False

@@ -48,7 +48,7 @@ def sense():
         print(str(err))
 
 def water(datum):
-    while pins.moisture < 50:
+    while pins.moisture < 40:
         if datum.wateringtime >= 60:
             slack('Soil moisture {m}% but has water for {t} already' \
                   .format(m=pins.moisture, t=datum.wateringtime))
