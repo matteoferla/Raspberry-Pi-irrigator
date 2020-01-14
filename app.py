@@ -27,21 +27,25 @@ def sense():
     Logs data and waters if needed for a max of 60 secs.
     :return:
     """
-    datum = Measurement(datetime=datetime.now(),
-                        temperature=20, #pins.temperature,
-                        humidity=60,#pins.humidity,
-                        moisture=pins.moisture,
-                        brightness=pins.brightness,
-                        wateringtime=0)
-    dprint(datum)
-    #tasks
-    dprint('measured')
-    water(datum)
-    dprint('watered')
-    check_tank()
-    dprint('tank checked')
-    db.session.add(datum)
-    db.session.commit()
+    try:
+        datum = Measurement(datetime=datetime.now(),
+                            temperature=20, #pins.temperature,
+                            humidity=60,#pins.humidity,
+                            moisture=pins.moisture,
+                            brightness=pins.brightness,
+                            wateringtime=0)
+        dprint(datum)
+        #tasks
+        dprint('measured')
+        water(datum)
+        dprint('watered')
+        check_tank()
+        dprint('tank checked')
+        db.session.add(datum)
+        db.session.commit()
+    except Exception as err:
+        slack('Sensing failed: '+str(err)+' '+err.message)
+        print(str(err))
 
 def water(datum):
     while pins.moisture < 50:

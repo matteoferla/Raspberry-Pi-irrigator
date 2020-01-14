@@ -90,12 +90,15 @@ class Pins:
         # just in case.
         try:
             if not self.rain.value:
+                print('Spill detected by the digital pin')
                 return True
             elif AnalogIn(self.mcp, MCP.P3).voltage < 3:
+                print('Spill detected by the analogue pin '+AnalogIn(self.mcp, MCP.P3).voltage)
                 return True
             else:
                 return False
         except:
+            print('Possible spill caused by a shortcircuit')
             return True
 
 
