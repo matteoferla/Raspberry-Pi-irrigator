@@ -15,24 +15,30 @@ def read_data(start, stop):
     temp = []
     hum = []
     b = []
-    wt = []
-    moist = []
+    wtA = []
+    wtB = []
+    moistA = []
+    moistB = []
     for m in Measurement.query.filter(Measurement.datetime > start) \
             .filter(Measurement.datetime < stop).all():  # Measurement.query.all():
         temp.append(m.temperature)
         dt.append(m.datetime)
         hum.append(m.humidity)
         b.append(m.brightness)
-        wt.append(m.wateringtime)
-        moist.append(m.moisture)
+        wtA.append(m.wateringtime)
+        moistA.append(m.soil_A_moisture)
+        wtB.append(m.wateringtime)
+        moistB.append(m.soil_A_moisture)
     # smooth = lambda a: savgol_filter(a, 31, 3).tolist()
     smooth = lambda a: a
     return dict(datetime=json.dumps([d.strftime('%Y-%m-%d %H:%M:%S') for d in dt]),
                 temperature=smooth(temp),
                 humidity=smooth(hum),
-                moisture=smooth(moist),
+                soil_A_moisture=smooth(moistA),
+                soil_B_moisture=smooth(moistB),
                 brightness=smooth(b),
-                wateringtime=smooth(wt))
+                wateringtime_A=smooth(wtA),
+                wateringtime_B=smooth(wtB))
 
 @app.route('/')
 def serve_data():

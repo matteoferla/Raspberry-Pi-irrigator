@@ -77,17 +77,24 @@ var trace2 = {
   x: {{datetime|safe}},
   y: {{humidity|safe}},
   name: 'Humidity',
-  yaxis: 'y2',
   type: 'scatter',
   line: {color: 'steelblue'},
   mode: 'lines'
 };
 
-var trace3 = {
+var trace3A = {
   x: {{datetime|safe}},
-  y: {{moisture|safe}},
-  name: 'Moisture',
-  yaxis: 'y2',
+  y: {{soil_A_moisture|safe}},
+  name: 'Soil moisture A',
+  type: 'scatter',
+  line: {color: 'sienna'},
+  mode: 'lines'
+};
+
+var trace3B = {
+  x: {{datetime|safe}},
+  y: {{soil_B_moisture|safe}},
+  name: 'Soil moisture B',
   type: 'scatter',
   line: {color: 'sienna'},
   mode: 'lines'
@@ -97,37 +104,49 @@ var trace4 = {
   x: {{datetime|safe}},
   y: {{brightness|safe}},
   name: 'Brightness',
-  yaxis: 'y2',
   type: 'scatter',
   line: {color: 'gold'},
   mode: 'lines'
 };
 
-var trace5 = {
+// var trace5 = {
+//   x: {{datetime|safe}},
+//   y: new Array({{N_elements|safe}}).fill(0),
+//   name: 'Watering Time',
+//   yaxis: 'y2',
+//   type: 'scatter',
+//   marker: {color: 'aqua',
+//           size: {{wateringtime|safe}}},
+//   mode: 'markers',
+//   hovertext: {{watertimetext|safe}},
+//   hoverinfo: 'text'
+// };
+
+var trace5A = {
   x: {{datetime|safe}},
-  y: new Array({{N_elements|safe}}).fill(0),
-  name: 'Watering Time',
-  yaxis: 'y2',
+  y: {{wateringtime_A|safe}},
+  name: 'Watering time A',
   type: 'scatter',
-  marker: {color: 'aqua',
-          size: {{wateringtime|safe}}},
-  mode: 'markers',
-  hovertext: {{watertimetext|safe}},
-  hoverinfo: 'text'
+  line: {color: 'aqua'},
+  mode: 'lines'
 };
 
-var data = [trace1, trace2, trace3, trace4, trace5];
+var trace5B = {
+  x: {{datetime|safe}},
+  y: {{wateringtime_B|safe}},
+  name: 'Watering time B',
+  type: 'scatter',
+  line: {color: 'aqua'},
+  mode: 'lines'
+};
+
+
+var data = [trace1, trace2, trace3A, trace3B, trace4, trace5A, trace5B];
 
 var layout = {
   title: 'Irrigation stats',
   xaxis: {title: 'Date'},
-  yaxis: {title: 'Temperature [°C]', range: [5,30], dtick: 1},
-  yaxis2: {
-    title: 'Humidity [%]',
-    overlaying: 'y',
-    side: 'right',
-    range: [0,100], dtick: 100/25
-  }
+  yaxis: {title: 'Temperature [°C]/Humidity [%]/etc. [%]', range: [0,100], dtick: 100/25},
 };
 
 Plotly.newPlot('graph', data, layout);
