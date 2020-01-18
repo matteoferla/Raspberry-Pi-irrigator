@@ -31,7 +31,7 @@ class Schedule:
                 Photo.camera.close()
         except:
             pass
-        self.lock.release()
+        if self.lock.locked(): self.lock.release()
         self.pins.cleanup()
         print('SIGINT or CTRL-C detected. Exiting gracefully')
         slack('Shutting down gracefully')

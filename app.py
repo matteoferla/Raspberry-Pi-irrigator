@@ -25,9 +25,9 @@ def read_data(start, stop):
         dt.append(m.datetime)
         hum.append(m.humidity)
         b.append(m.brightness)
-        wtA.append(m.wateringtime)
+        wtA.append(m.wateringtime_A)
         moistA.append(m.soil_A_moisture)
-        wtB.append(m.wateringtime)
+        wtB.append(m.wateringtime_B)
         moistB.append(m.soil_A_moisture)
     # smooth = lambda a: savgol_filter(a, 31, 3).tolist()
     smooth = lambda a: a
