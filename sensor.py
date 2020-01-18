@@ -1,7 +1,8 @@
 #MCP3008 modules
 import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
-import adafruit_dht
+#import adafruit_dht
+import Adafruit_DHT
 import busio
 import digitalio
 import board
@@ -29,54 +30,56 @@ mcp = MCP.MCP3008(spi, cs)
 class Pins:
     """
    * DHT11 is connected to GPIO17 and powered by 3.3V without a pull resistor (DHT22 sensor not working)
-    * MCP3008 is MISO: GPIO9, MOSI:GPIO10, Clock: GPIO11 and CS GPIO05
+    * MCP3008 is D_out -> MISO: GPIO9, D_in -> MOSI:GPIO10, Clock: GPIO11 and CS GPIO05
     * Pumps are connected to GPIO23 and GPIO24 (the two pins between two GND)
     """
 
     mcp = mcp
-    dht = adafruit_dht.DHT11(board.D17)
     pumps = (digitalio.DigitalInOut(board.D23), digitalio.DigitalInOut(board.D24))
     pumps[0].direction = digitalio.Direction.OUTPUT
     pumps[1].direction = digitalio.Direction.OUTPUT
-    rain = digitalio.DigitalInOut(board.D20)
+    spill = digitalio.DigitalInOut(board.D20)
+    spill.direction = digitalio.Direction.INPUT
+    soil_limits = [1.2, 3.2]
 
     @property
-    def moisture(self):
-        return round(100 - AnalogIn(self.mcp, MCP.P0).voltage/3.26*100)
+    def dht(self):
+        return Adafruit_DHT.read(22, 17)
 
     @property
     def brightness(self):
         """
-        Corrected to percent where 100% is as bright as it gets, while 30% is pitch darkness.
-        The 0.3V is the value when the gnd is pull out from the photoresistor
+        Corrected to percent based on the values outputted by using 10k&Omega; and 1M&Omega; resistors.
         :return: brightness
         """
-        return round(100 - AnalogIn(self.mcp, MCP.P1).voltage/0.30*100)
-
+        return round((AnalogIn(mcp, MCP.P0).voltage -1.7)/(2.2-1.7)*100)
 
     @property
     def temperature(self):
-        while True:
-            try:
-                return self.dht.temperature
-            except:
-                pass
+        return self.dht.temperature
 
     @property
     def humidity(self):
-        while True:
-            try:
-                d = self.dht.humidity
-                assert d < 101
-                return self.dht.humidity
-            except:
-                pass
+        return self.dht.humidity
+
+    def get_soil_moisture(self, number):
+        pin = [MCP.P3, MCP.P4][number]
+        return round(100 - (AnalogIn(self.mcp, pin).voltage - self.soil_limits[0]) / (self.soil_limits[1] - self.soil_limits[0]) * 100)
+
+    @property
+    def soil_B_moisture(self):
+        return self.get_soil_moisture(0)
+
+    @property
+    def soil_A_moisture(self):
+        return self.get_soil_moisture(1)
 
     def engage_pump(self, number=0, secs=1):
         self.pumps[number].value = True
         time.sleep(secs)
         self.pumps[number].value = False
         return self
+
 
     @property
     def tank_filled(self):
@@ -87,28 +90,25 @@ class Pins:
 
     @property
     def tank_level(self):
-        return AnalogIn(self.mcp, MCP.P2).voltage
+        return AnalogIn(self.mcp, MCP.P1).voltage
 
     @property
-    def rain_analog(self):
-        return AnalogIn(self.mcp, MCP.P3).voltage
+    def spill_analog(self):
+        return AnalogIn(self.mcp, MCP.P2).voltage
 
     @property
     def spilled(self):
         # Three pronged: error, D0 and A0
         # just in case.
         try:
-            if not self.rain.value:
-                print('Spill detected by the digital pin')
-                return True
-            elif self.rain_analog < 3:
-                print('Spill detected by the analogue pin '+self.rain_analog)
-                return True
+            if not self.spill.value:
+                return 'Spill detected by the digital pin'
+            elif self.spill_analog < 2:
+                return 'Spill detected by the analogue pin '+self.spill_analog
             else:
-                return False
+                return None
         except:
-            print('Possible spill caused by a shortcircuit')
-            return True
+            return 'Possible spill caused by a shortcircuit'
 
 
     def cleanup(self):
