@@ -57,7 +57,8 @@ def serve_data():
                            yesterday=str((datetime.now() - timedelta(days=1)).date()),
                            threedaysago=str((datetime.now() - timedelta(days=3)).date()),
                            aweekago=str((datetime.now() - timedelta(days=7)).date()),
-                           watertimetext=[str(x) + ' sec.' for x in data['wateringtime']],
+                           #watertimetext_A=[str(x) + ' sec.' for x in data['wateringtime_A']],
+                           #watertimetext_B=[str(x) + ' sec.' for x in data['wateringtime_B']],
                            N_elements=len(data['datetime']),
                            album=list(sorted(os.listdir('static/plant_photos'), reverse=True))[:24:3],
                            **data)
