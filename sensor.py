@@ -14,6 +14,7 @@ import numpy as np
 from datetime import datetime
 import os
 import RPi.GPIO as GPIO
+from collections import namedtuple
 
 ### startup ###############################################################
 if not os.path.exists('static'):
@@ -44,7 +45,9 @@ class Pins:
 
     @property
     def dht(self):
-        return Adafruit_DHT.read(22, 17)
+        # imitating the circuitpython dht
+        fauxDHT = namedtuple('DHT', ['humidity', 'temperature'])
+        return fauxDHT(*Adafruit_DHT.read(22, 17))
 
     @property
     def brightness(self):
