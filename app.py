@@ -28,7 +28,7 @@ def read_data(start, stop):
         wtA.append(m.wateringtime_A)
         moistA.append(m.soil_A_moisture)
         wtB.append(m.wateringtime_B)
-        moistB.append(m.soil_A_moisture)
+        moistB.append(m.soil_B_moisture)
     # smooth = lambda a: savgol_filter(a, 31, 3).tolist()
     smooth = lambda a: a
     return dict(datetime=json.dumps([d.strftime('%Y-%m-%d %H:%M:%S') for d in dt]),
@@ -63,9 +63,31 @@ def serve_data():
                            album=list(sorted(os.listdir('static/plant_photos'), reverse=True))[:24:3],
                            **data)
 
+@app.route('/trigger')
+def sense_route():
+    if 'mode' in request.args:
+        mode = request.args.get('mode')
+    else:
+        mode = 'all'
+    if mode == 'all':
+        schedule.check_tank()
+        schedule.check_spill()
+        schedule.sense()
+        schedule.photo()
+    elif mode == 'photo':
+        schedule.photo()
+    elif mode == 'measure':
+        schedule.sense()
+    elif mode == 'tank':
+        schedule.check_tank()
+    else:
+        pass
+    return 'OK'
+
+
 ############# Main
 if __name__ == '__main__':
-    Schedule()
+    schedule = Schedule()
     if not os.path.exists('moisture.sqlite'):
         db.create_all()
     serve(app, host='0.0.0.0', port=5000)

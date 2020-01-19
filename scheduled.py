@@ -21,14 +21,19 @@ class Schedule:
         ## Scheduler
         scheduler = BackgroundScheduler()
         scheduler.add_job(func=self.sense, trigger="interval", hours=1)
-        scheduler.add_job(func=Photo, trigger="interval", hours=1)
+        scheduler.add_job(func=self.photo(), trigger="interval", hours=1)
         scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
         scheduler.start()
+
+    def photo(self):
+        with self.lock:
+            Photo()
+
 
     def death_handler(self, signal_received, frame):
         try:
             if Photo._camera and not Photo._camera.closed:
-                Photo.camera.close()
+                Photo._camera.close()
         except:
             pass
         if self.lock.locked(): self.lock.release()

@@ -59,11 +59,21 @@ class Pins:
 
     @property
     def temperature(self):
-        return self.dht.temperature
+        for i in range(10):
+            t = self.dht.temperature
+            if t is not None:
+                return t
+        else:
+            raise ValueError('Cannot read temperature')
 
     @property
     def humidity(self):
-        return self.dht.humidity
+        for i in range(10):
+            h = self.dht.humidity
+            if h is not None:
+                return h
+        else:
+            raise ValueError('Cannot read humidity')
 
     def get_soil_moisture(self, number):
         pin = [MCP.P3, MCP.P4][number]
@@ -71,11 +81,11 @@ class Pins:
 
     @property
     def soil_B_moisture(self):
-        return self.get_soil_moisture(0)
+        return self.get_soil_moisture(1)
 
     @property
     def soil_A_moisture(self):
-        return self.get_soil_moisture(1)
+        return self.get_soil_moisture(0)
 
     def engage_pump(self, number=0, secs=1):
         self.pumps[number].value = True
@@ -110,8 +120,8 @@ class Pins:
                 return 'Spill detected by the analogue pin '+self.spill_analog
             else:
                 return None
-        except:
-            return 'Possible spill caused by a shortcircuit'
+        except Exception as err:
+            return f'Possible spill caused by a shortcircuit ({err})'
 
 
     def cleanup(self):
