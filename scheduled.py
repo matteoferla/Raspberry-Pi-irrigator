@@ -21,7 +21,7 @@ class Schedule:
         ## Scheduler
         scheduler = BackgroundScheduler()
         scheduler.add_job(func=self.sense, trigger="interval", hours=1)
-        scheduler.add_job(func=self.photo(), trigger="interval", hours=1)
+        scheduler.add_job(func=self.photo, trigger="interval", hours=1)
         scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
         scheduler.start()
 
