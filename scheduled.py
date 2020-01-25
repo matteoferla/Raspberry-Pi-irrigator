@@ -67,7 +67,7 @@ class Schedule:
         with self.lock:
             for i in (0, 1):
                 wateringtime = 0
-                while self.pins.get_soil_moisture(i) < 30:
+                while self.pins.get_soil_moisture(i) < 85:
                     if wateringtime >= 30:
                         slack('Soil moisture {m}% but has water for {t} already' \
                               .format(m=self.pins.get_soil_moisture(i), t=wateringtime))

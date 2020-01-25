@@ -9,7 +9,13 @@ This project is ongoing and these are my notes...
 
 ## Features
 
+What the schematic looks like...
+
 ![irrigator.jpg](irrigator.jpg)
+
+What it looks like in RL...
+
+![setup.JPG](images/setup.JPG)
 
 ### Peter pepper plant
 
@@ -34,6 +40,12 @@ Powering a pi via the GPIO is bad as it may short the PMIC, due to current spike
 
 I am not sure what the actual current is on the 5V and 3.3V rail.
 The 12V supply is 2.5A and the module produces a max of 700mA. I'll assume it is that.
+
+![setup.JPG](images/setup.JPG)
+
+A problem with the power for the pi there is a USB and a 12V for the rail and a 12V for the motors and lights...
+
+![power.JPG](images/power.JPG)
 
 ## pi Camera NoIR
 
@@ -65,7 +77,13 @@ A resistance sensor (YL69 moisture sensor) measures the soil humidity every hour
 The arbitrary value of 50% threshold is based on plying with ramekins with soil. I baked some soil in the oven and then measured different levels of hydration.
 
 I got ages back the YL69 moisture sensor from Kuman kit from Amazon. The YL-69 consists of an electrode and an amplifier (LM393) module. The YL69 oxidises over time (a month apparently).
-So further down the line, I will need to switch the electrode to a pair of graphite leads or a capacitance sensor. LM393 is a comparator not a op-amp like a LM358. For project completion I would need multiple sensors.
+So further down the line, I will need to switch the electrode to a pair of graphite leads or a capacitance sensor. LM393 is a comparator not a op-amp like a LM358.
+
+Due to the amplifier it is always on.
+
+As promised by the web it did get corroded.
+
+![corroded.JPG](images/corroded.JPG)
 
 ### Moisture via capacitative sensor
 
@@ -73,13 +91,21 @@ I have the analog models. They have in the top part a `TLC555I LinCMOS Timer`, n
 No idea what this does exactly.
 It draws current even when the analog out is off.
 
-Oddly, the two don't have matching values.
+Oddly, the two don't have matching values and aren't that great.
 
 ### Water level
 
 The water in the jug is measured by two graphite electrodes. Aka. 2mm graphite cores for mechanical pencils from [Amazon](https://www.amazon.co.uk/gp/product/B0051OCJZ4/).
 The jug is a credit card width (8 cm) and tap water has a resistance of 1 k&Omega; so that is 7k&Omega;, when full.
 When empty it should be zero —see pulldown problem.
+
+![tank.JPG](images/tank.JPG)
+
+Oddly, the graphite rods had white lettering, which dissolved away leaving flakes.
+
+![lettering.JPG](images/lettering.JPG)
+
+In two weeks of submersion, the graphite seems fine.
 
 ## Pulldown resistors
 Pull-down resistors make faint current go to zero. But they also close the circuit!
@@ -98,6 +124,8 @@ To water I need pumps and stuff:
 * 2x Goso AB11 solenoid pumps [from eBay](https://www.ebay.co.uk/itm/12V-Dosing-Pump-Peristaltic-Head-For-Aquarium-Lab-Analytical-Water-Arduino-DIY/202050095537) in green and blue. The pumps run at 12V 7.5W. SO 7.5W÷12V=0.625A.
 * STM ULN2803A Darlington Driver [from eBay](https://www.ebay.co.uk/itm/ULN2803A-Darlington-Driver-TRANSISTOR-ARRAY-8-NPN-x-2-pcs/222622920820). The darlington driver has inbuilt rectifier diodes. 
 * AC/DC adaptor 12V⎓3A with standard ⊖-C*-⊕ coaxial and screw jack-thinggy adaptor.
+
+![pumps.JPG](images/pumps.JPG)
 
 Lessons learnt:
 
