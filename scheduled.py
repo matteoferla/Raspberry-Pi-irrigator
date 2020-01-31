@@ -52,12 +52,14 @@ class Schedule:
         try:
             with self.lock:
                 self.brightness_stack.append(self.pins.brightness)
+                mean_b = sum(self.brightness_stack)/len(self.brightness_stack)
+                self.brightness_stack = []
                 datum = Measurement(datetime=datetime.now(),
                                     temperature=self.pins.temperature,
                                     humidity=self.pins.humidity,
                                     soil_A_moisture=self.pins.soil_A_moisture,
                                     soil_B_moisture=self.pins.soil_B_moisture,
-                                    brightness=sum(self.brightness_stack)/len(self.brightness_stack),
+                                    brightness=mean_b,
                                     wateringtime_A=0,
                                     wateringtime_B=0)
                 db.session.add(datum)
