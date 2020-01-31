@@ -24,7 +24,7 @@ class Schedule:
         scheduler.add_job(func=self.sense, trigger="interval", hours=1)
         scheduler.add_job(func=self.photo, trigger="interval", hours=1)
         scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
-        scheduler.add_job(function=self.continuous_bright, trigger="interval", minutes=1)
+        scheduler.add_job(func=self.continuous_bright, trigger="interval", minutes=1)
         scheduler.start()
 
     def photo(self):
