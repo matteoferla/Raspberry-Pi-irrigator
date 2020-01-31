@@ -14,6 +14,7 @@ from threading import Lock
 
 class Schedule:
     lock = Lock() #stop interferring with each other.
+    brightness_stack = []
 
     def __init__(self):
         self.pins = Pins()
@@ -23,6 +24,7 @@ class Schedule:
         scheduler.add_job(func=self.sense, trigger="interval", hours=1)
         scheduler.add_job(func=self.photo, trigger="interval", hours=1)
         scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
+        scheduler.add_job(function=self.continuous_bright, trigger="interval", minutes=1)
         scheduler.start()
 
     def photo(self):
@@ -49,12 +51,13 @@ class Schedule:
         """
         try:
             with self.lock:
+                self.brightness_stack.append(self.pins.brightness)
                 datum = Measurement(datetime=datetime.now(),
                                     temperature=self.pins.temperature,
                                     humidity=self.pins.humidity,
                                     soil_A_moisture=self.pins.soil_A_moisture,
                                     soil_B_moisture=self.pins.soil_B_moisture,
-                                    brightness=self.pins.brightness,
+                                    brightness=sum(self.brightness_stack)/len(self.brightness_stack),
                                     wateringtime_A=0,
                                     wateringtime_B=0)
                 db.session.add(datum)
@@ -91,5 +94,9 @@ class Schedule:
             r = self.pins.spilled
             if r:
                 slack(r)
+
+    def continuous_bright(self):
+        with self.lock:
+            self.brightness_stack.append(self.pins.brightness)
 
 
