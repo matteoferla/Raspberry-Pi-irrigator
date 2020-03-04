@@ -77,7 +77,7 @@ class Schedule:
                         slack('Soil moisture {m}% but has water for {t} already' \
                               .format(m=self.pins.get_soil_moisture(i), t=wateringtime))
                         break
-                    self.pins.engage_pump(secs=10)
+                    self.pins.engage_pump(number=i, secs=10)
                     wateringtime += 10
                 if i == 0:
                     datum.wateringtime_A = wateringtime

@@ -4,7 +4,7 @@ from scheduled import Schedule
 
 from waitress import serve
 import os, json
-from flask import render_template, request
+from flask import render_template, request, Response
 from datetime import datetime, timedelta, time
 
 
@@ -69,6 +69,11 @@ def sense_route():
         mode = request.args.get('mode')
     else:
         mode = 'all'
+    if 'key' not in request.args:
+        return Response(status=401)
+    elif request.args.get('key') != os.environ['irrigator_key']:
+        return Response(status=401)
+        return 'Unauthorised'
     if mode == 'all':
         schedule.check_tank()
         schedule.check_spill()
@@ -80,6 +85,8 @@ def sense_route():
         schedule.sense()
     elif mode == 'tank':
         schedule.check_tank()
+    elif mode == 'water':
+        schedule.pins.engage_pump(number=request.args.get('pump'), secs=10)
     else:
         pass
     return 'OK'
