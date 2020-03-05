@@ -71,9 +71,8 @@ def sense_route():
         mode = 'all'
     if 'key' not in request.args:
         return Response(status=401)
-    elif request.args.get('key') != os.environ['irrigator_key']:
+    elif request.args.get('key') != os.environ['IRRIGATOR_KEY']:
         return Response(status=401)
-        return 'Unauthorised'
     if mode == 'all':
         schedule.check_tank()
         schedule.check_spill()
