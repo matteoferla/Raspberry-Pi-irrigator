@@ -85,7 +85,8 @@ def sense_route():
     elif mode == 'tank':
         schedule.check_tank()
     elif mode == 'water': #/trigger?key=xxxx&mode=water&pump=1
-        schedule.pins.engage_pump(number=request.args.get('pump'), secs=10)
+        n = int(request.args.get('pump'))
+        schedule.pins.engage_pump(number=n, secs=10)
     else:
         pass
     return 'OK'
