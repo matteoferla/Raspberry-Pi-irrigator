@@ -1,6 +1,15 @@
 from models import db, Measurement  # Models initiated.
 ## PI
-from sensor import Pins, Photo  # reads pins
+from warnings import warn
+try:
+    from sensor import Pins, Photo  # reads pins
+except Exception as error:
+    from sensor.camera import Photo
+    warn(f'Sensors appear non functional: {error}')
+    class Pins:
+        def cleanup(self):
+            pass
+
 ## Not PI (Dev)
 # from mock_sensor import MockPins as Pins
 # from mock_sensor import MockCam as Cam
@@ -16,15 +25,19 @@ class Schedule:
     lock = Lock() #stop interferring with each other.
     brightness_stack = []
 
-    def __init__(self):
+    def __init__(self, sense=True, photo=True, spill=True, bright=True):
         self.pins = Pins()
         signal(SIGINT, self.death_handler)
         ## Scheduler
         scheduler = BackgroundScheduler()
-        scheduler.add_job(func=self.sense, trigger="interval", hours=1)
-        scheduler.add_job(func=self.photo, trigger="interval", hours=1)
-        scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
-        scheduler.add_job(func=self.continuous_bright, trigger="interval", minutes=1)
+        if sense:
+            scheduler.add_job(func=self.sense, trigger="interval", hours=1)
+        if photo:
+            scheduler.add_job(func=self.photo, trigger="interval", hours=1)
+        if spill:
+            scheduler.add_job(func=self.check_spill, trigger="interval", minutes=1)
+        if bright:
+            scheduler.add_job(func=self.continuous_bright, trigger="interval", minutes=1)
         scheduler.start()
 
     def photo(self):
