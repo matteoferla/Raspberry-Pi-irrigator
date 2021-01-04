@@ -1,4 +1,8 @@
 # Raspberry-Pi-irrigator
+
+> :skull: This project has been superceded by [https://github.com/matteoferla/Somewhat-Smart-Home](https://github.com/matteoferla/Somewhat-Smart-Home).
+
+
 A Raspberry Pi controlled irrigation system to water plants based on soil moisture.
 A pump waters the plant (a peter pepper chilli plant) based on its soil moisture, while the pi camera takes photos of it. 
 —last year's attempt at gardening was an unmitigated disaster, so this year I am automating it.
